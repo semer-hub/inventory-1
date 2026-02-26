@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory & Stock Management System</title>
+    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-cube logo-icon"></i>
+                    <span class="logo-text">StockHub</span>
+                </div>
+                <button class="toggle-sidebar-btn" id="toggleSidebarBtn"><i class="fas fa-bars"></i></button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li>
+                        <a href="#" data-section="dashboard" class="nav-link active">
+                            <i class="nav-icon fas fa-chart-line"></i>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-section="products" class="nav-link">
+                            <i class="nav-icon fas fa-boxes"></i>
+                            <span class="nav-text">Products</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-section="stock-out" class="nav-link">
+                            <i class="nav-icon fas fa-arrow-right-from-bracket"></i>
+                            <span class="nav-text">Stock Out</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-section="reports" class="nav-link">
+                            <i class="nav-icon fas fa-file-chart-line"></i>
+                            <span class="nav-text">Reports</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#" data-section="settings" class="nav-link">
+                            <i class="nav-icon fas fa-gear"></i>
+                            <span class="nav-text">Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="header">
+                <h1 id="pageTitle">Dashboard</h1>
+                <div class="header-actions">
+                    <input type="text" id="globalSearch" class="search-input" placeholder="Search products...">
+                    <button class="add-product-btn" id="addProductBtn"><i class="fas fa-plus"></i> Add Product</button>
+                </div>
+            </header>
+
+            <!-- Content Sections -->
+            <div class="content">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="section active">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon total-products"><i class="fas fa-boxes-stacked"></i></div>
+                            <div class="stat-content">
+                                <h3>Total Products</h3>
+                                <p id="totalProducts" class="stat-value">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon total-stock"><i class="fas fa-chart-bar"></i></div>
+                            <div class="stat-content">
+                                <h3>Total Stock</h3>
+                                <p id="totalStock" class="stat-value">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon low-stock"><i class="fas fa-triangle-exclamation"></i></div>
+                            <div class="stat-content">
+                                <h3>Low Stock</h3>
+                                <p id="lowStockCount" class="stat-value">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon out-of-stock"><i class="fas fa-circle-xmark"></i></div>
+                            <div class="stat-content">
+                                <h3>Out of Stock</h3>
+                                <p id="outOfStockCount" class="stat-value">0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon inventory-value"><i class="fas fa-money-bill"></i></div>
+                            <div class="stat-content">
+                                <h3>Inventory Value</h3>
+                                <p id="inventoryValue" class="stat-value">$0</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon profit"><i class="fas fa-chart-line"></i></div>
+                            <div class="stat-content">
+                                <h3>Est. Profit</h3>
+                                <p id="estimatedProfit" class="stat-value">$0</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Canvas -->
+                    <div class="chart-container">
+                        <h2>Stock Distribution</h2>
+                        <canvas id="stockChart"></canvas>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="activity-container">
+                        <h2>Recent Activity</h2>
+                        <div class="activity-list" id="activityList">
+                            <p class="empty-message">No activity yet</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Products Section -->
+                <section id="products" class="section">
+                    <div class="products-toolbar">
+                        <div class="filter-group">
+                            <input type="text" id="productSearch" class="filter-input" placeholder="Search by name...">
+                            <select id="categoryFilter" class="filter-select">
+                                <option value="">All Categories</option>
+                                <option value="Electronics">Electronics</option>
+                                <option value="Clothing">Clothing</option>
+                                <option value="Food">Food</option>
+                                <option value="Books">Books</option>
+                                <option value="Furniture">Furniture</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <select id="statusFilter" class="filter-select">
+                                <option value="">All Status</option>
+                                <option value="In Stock">In Stock</option>
+                                <option value="Low Stock">Low Stock</option>
+                                <option value="Out of Stock">Out of Stock</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="products-table-container">
+                        <table class="products-table" id="productsTable">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Product Name</th>
+                                    <th>SKU</th>
+                                    <th>Category</th>
+                                    <th>Quantity</th>
+                                    <th>Status</th>
+                                    <th>Cost Price</th>
+                                    <th>Selling Price</th>
+                                    <th>Supplier</th>
+                                    <th>Date Added</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productsTableBody">
+                                <tr class="empty-row">
+                                    <td colspan="10" class="empty-message">No products found</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Stock Out Section -->
+                <section id="stock-out" class="section">
+                    <div class="stock-out-container">
+                        <div class="stock-out-form-wrapper">
+                            <h2>Stock Out Form</h2>
+                            <form id="stockOutForm" class="stock-out-form">
+                                <div class="form-group">
+                                    <label for="stockOutProduct">Product *</label>
+                                    <select id="stockOutProduct" required>
+                                        <option value="">Select Product</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="stockOutQuantity">Quantity *</label>
+                                    <input type="number" id="stockOutQuantity" required min="1" placeholder="0">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="stockOutReason">Reason *</label>
+                                    <select id="stockOutReason" required>
+                                        <option value="">Select Reason</option>
+                                        <option value="Sale">Sale</option>
+                                        <option value="Damage">Damage</option>
+                                        <option value="Expired">Expired</option>
+                                        <option value="Manual">Manual Adjustment</option>
+                                        <option value="Return">Customer Return</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="stockOutDate">Date</label>
+                                    <input type="date" id="stockOutDate" readonly>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="stockOutNotes">Notes</label>
+                                    <textarea id="stockOutNotes" placeholder="Add any notes..." rows="3"></textarea>
+                                </div>
+
+                                <div class="form-actions">
+                                    <button type="submit" class="submit-btn"><i class="fas fa-check"></i> Record Stock Out</button>
+                                    <button type="reset" class="cancel-btn"><i class="fas fa-redo"></i> Reset</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="stock-out-history">
+                            <h2>Recent Stock Out Transactions</h2>
+                            <div id="stockOutHistory" class="history-list">
+                                <p class="empty-message">No stock out transactions yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Reports Section -->
+                <section id="reports" class="section">
+                    <div class="reports-grid">
+                        <div class="report-card">
+                            <h3><i class="fas fa-triangle-exclamation"></i> Low Stock Report</h3>
+                            <div id="lowStockReport" class="report-content">
+                                <p class="empty-message">No low stock items</p>
+                            </div>
+                        </div>
+                        <div class="report-card">
+                            <h3><i class="fas fa-circle-xmark"></i> Out of Stock Report</h3>
+                            <div id="outOfStockReport" class="report-content">
+                                <p class="empty-message">No out of stock items</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="report-card full-width">
+                        <h3><i class="fas fa-chart-bar"></i> Stock Movement History</h3>
+                        <div id="stockMovementHistory" class="report-content">
+                            <p class="empty-message">No stock movements yet</p>
+                        </div>
+                    </div>
+
+                    <div class="report-card full-width">
+                        <h3><i class="fas fa-list"></i> Inventory Summary</h3>
+                        <div class="inventory-summary" id="inventorySummary">
+                            <p class="empty-message">No data available</p>
+                        </div>
+                    </div>
+
+                    <div class="report-actions">
+                        <button id="exportCsvBtn" class="action-btn export-btn"><i class="fas fa-download"></i> Export to CSV</button>
+                        <button id="printReportBtn" class="action-btn print-btn"><i class="fas fa-print"></i> Print Report</button>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings" class="section">
+                    <div class="settings-group">
+                        <h2>Settings</h2>
+                        <div class="setting-item">
+                            <label>Low Stock Threshold</label>
+                            <input type="number" id="lowStockThreshold" min="1" max="100" value="5" class="setting-input">
+                            <p class="help-text">Products with quantity ≤ this value will be marked as Low Stock</p>
+                        </div>
+                        <div class="setting-item">
+                            <button id="clearDataBtn" class="danger-btn"><i class="fas fa-trash"></i> Clear All Data</button>
+                            <p class="help-text">This will delete all products and data. This action cannot be undone.</p>
+                        </div>
+                        <div class="setting-item">
+                            <button id="exportDataBtn" class="action-btn"><i class="fas fa-floppy-disk"></i> Backup Data</button>
+                            <p class="help-text">Download all data as JSON file</p>
+                        </div>
+                        <div class="setting-item">
+                            <label>Import Data</label>
+                            <input type="file" id="importDataFile" accept=".json" class="file-input">
+                            <p class="help-text">Import previously exported data</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Product Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Add Product</h2>
+                <button class="modal-close-btn" id="modalCloseBtn">&times;</button>
+            </div>
+            <form id="productForm" class="product-form">
+                <div class="form-group">
+                    <label for="productName">Product Name *</label>
+                    <input type="text" id="productName" required placeholder="Enter product name">
+                </div>
+
+                <div class="form-group">
+                    <label for="productImage">Product Image</label>
+                    <div class="image-upload-group">
+                        <input type="file" id="productImage" accept="image/*" class="file-input">
+                        <div class="image-preview-container">
+                            <img id="imagePreview" class="image-preview" style="display: none;" alt="Product preview">
+                            <div id="noImagePlaceholder" class="no-image-placeholder">
+                                <i class="fas fa-image"></i>
+                                <p>No image selected</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sku">SKU</label>
+                        <input type="text" id="sku" readonly placeholder="Auto-generated">
+                    </div>
+                    <div class="form-group">
+                        <label for="category">Category *</label>
+                        <select id="category" required>
+                            <option value="">Select Category</option>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Clothing">Clothing</option>
+                            <option value="Food">Food</option>
+                            <option value="Books">Books</option>
+                            <option value="Furniture">Furniture</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quantity">Quantity *</label>
+                        <input type="number" id="quantity" required min="0" placeholder="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="costPrice">Cost Price ($) *</label>
+                        <input type="number" id="costPrice" required min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label for="sellingPrice">Selling Price ($) *</label>
+                        <input type="number" id="sellingPrice" required min="0" step="0.01" placeholder="0.00">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="supplier">Supplier Name</label>
+                    <input type="text" id="supplier" placeholder="Enter supplier name">
+                </div>
+
+                <input type="hidden" id="productImageData">
+
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn"><i class="fas fa-save"></i> Save Product</button>
+                    <button type="button" class="cancel-btn" id="cancelBtn"><i class="fas fa-times"></i> Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Stock Action Modal -->
+    <div class="modal" id="stockActionModal">
+        <div class="modal-content stock-modal">
+            <div class="modal-header">
+                <h2 id="stockActionTitle">Update Stock</h2>
+                <button class="modal-close-btn" id="stockActionCloseBtn">&times;</button>
+            </div>
+            <div class="stock-action-content">
+                <div class="action-buttons">
+                    <button id="restockBtn" class="action-btn restock-btn"><i class="fas fa-arrow-up"></i> Restock (+)</button>
+                    <button id="saleBtn" class="action-btn sale-btn"><i class="fas fa-arrow-down"></i> Sale (-)</button>
+                </div>
+                <div id="stockActionForm" class="stock-action-form">
+                    <label>Quantity to change:</label>
+                    <input type="number" id="stockQuantity" min="1" value="1" placeholder="Enter quantity">
+                    <button id="confirmStockBtn" class="submit-btn">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content confirm-modal">
+            <p id="confirmMessage">Are you sure?</p>
+            <div class="modal-actions">
+                <button id="confirmYesBtn" class="confirm-btn yes-btn"><i class="fas fa-trash"></i> Yes, Delete</button>
+                <button id="confirmNoBtn" class="confirm-btn no-btn"><i class="fas fa-times"></i> Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="./script.js"></script>
+</body>
+</html>
